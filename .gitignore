@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+dist/
+*.egg-info/
+.pytest_cache/
+*.db
+
+# Node
+node_modules/
+dist/
+.env.local
+
+# Env
+.env
+*.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Runtime
+.pids/
+.logs/
+
+# OS
+.DS_Store
+
+# AI
+.claude/
+CLAUDE.md
+AGENTS.md

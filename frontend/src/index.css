@@ -1,0 +1,35 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  /* AI Works brand colors */
+  --color-talc: #FFFFFF;
+  --color-mist: #EDF1F3;
+  --color-onyx: #000000;
+  --color-flamingo: #F2617A;
+  --color-wave: #003D4F;
+  --color-turmeric: #CC850A;
+  --color-jade: #6B9E78;
+  --color-sapphire: #47A1AD;
+  --color-amethyst: #634F7D;
+
+  /* Typography */
+  --font-heading: 'Bitter', Georgia, serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background-color: #EDF1F3;
+  color: #000000;
+}
+
+#root {
+  width: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+}
