@@ -24,12 +24,20 @@ export interface Policy {
   github_token: string
   github_token_set: boolean
   github_repo: string
+  target_path: string
   can_read_repo: boolean
   can_open_pr: boolean
   can_auto_merge: boolean
   require_human_approval: boolean
   max_files_per_pr: number
   allowed_file_extensions: string
+}
+
+export interface GitHubValidation {
+  valid: boolean
+  repo: string
+  default_branch: string
+  private: boolean
 }
 
 export const incidentsApi = {
@@ -39,11 +47,14 @@ export const incidentsApi = {
     api.post<Incident>('/incidents/', data).then(r => r.data),
   delete: (id: number) => api.delete(`/incidents/${id}`),
   postmortem: (id: number) => api.post(`/incidents/${id}/postmortem`).then(r => r.data),
+  withPostmortems: () =>
+    api.get<Incident[]>('/incidents/').then(r => r.data.filter(i => i.postmortem)),
 }
 
 export const policyApi = {
   get: () => api.get<Policy>('/policy/').then(r => r.data),
   update: (data: Partial<Policy>) => api.put<Policy>('/policy/', data).then(r => r.data),
+  validateGitHub: () => api.post<GitHubValidation>('/policy/validate-github').then(r => r.data),
 }
 
 export const webhookApi = {

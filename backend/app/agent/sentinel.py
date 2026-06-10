@@ -33,8 +33,15 @@ async def run_agent_stream(
     stack_trace: str,
     github_token: str,
     github_repo: str,
+    target_path: str = "",
 ) -> AsyncGenerator[dict[str, Any], None]:
     client = anthropic.AsyncAnthropic()
+
+    target_hint = (
+        f"\nFocus your code search starting from the path: `{target_path}`"
+        if target_path
+        else "\nStart by listing the root directory to understand the project structure."
+    )
 
     user_message = f"""Incident: {incident_title}
 
@@ -43,7 +50,7 @@ Error: {error_message}
 Stack trace:
 {stack_trace or 'Not provided'}
 
-Repository: {github_repo}
+Repository: {github_repo}{target_hint}
 
 Analyze this incident, classify it, explore the repository to understand the context, and take the appropriate action (PR or architectural report)."""
 
@@ -93,9 +100,6 @@ Analyze this incident, classify it, explore the repository to understand the con
                         tool_uses.append(current_tool)
                         current_tool = None
 
-                elif event.type == "message_stop":
-                    pass
-
             final_message = await stream.get_final_message()
 
         messages.append({"role": "assistant", "content": final_message.content})
@@ -114,7 +118,6 @@ Analyze this incident, classify it, explore the repository to understand the con
                 "input": tool_use["input"],
             }
 
-            # Check policy before executing PR creation
             if tool_use["name"] == "create_pull_request" and not github_token:
                 result = "Cannot create PR: GitHub token not configured in governance settings."
             else:
@@ -144,7 +147,6 @@ Analyze this incident, classify it, explore the repository to understand the con
 
         messages.append({"role": "user", "content": tool_results})
 
-    # Extract architectural report from the final agent text
     if classification == "architectural":
         final_texts = [
             block.text for block in final_message.content if hasattr(block, "text")

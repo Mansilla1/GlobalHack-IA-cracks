@@ -9,6 +9,7 @@ class Policy(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     github_token: Mapped[str] = mapped_column(String(255), default="")
     github_repo: Mapped[str] = mapped_column(String(255), default="")
+    target_path: Mapped[str] = mapped_column(String(255), default="")
     can_read_repo: Mapped[bool] = mapped_column(Boolean, default=True)
     can_open_pr: Mapped[bool] = mapped_column(Boolean, default=True)
     can_auto_merge: Mapped[bool] = mapped_column(Boolean, default=False)

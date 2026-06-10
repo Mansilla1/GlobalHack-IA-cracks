@@ -32,9 +32,9 @@ async def agent_websocket(websocket: WebSocket, incident_id: int):
 
     github_token = policy.github_token if policy else ""
     github_repo = policy.github_repo if policy else ""
+    target_path = policy.target_path if policy else ""
     can_open_pr = policy.can_open_pr if policy else False
 
-    # If policy disallows PRs, override token
     if not can_open_pr:
         github_token = ""
 
@@ -50,6 +50,7 @@ async def agent_websocket(websocket: WebSocket, incident_id: int):
             stack_trace=incident.stack_trace or "",
             github_token=github_token,
             github_repo=github_repo,
+            target_path=target_path,
         ):
             await websocket.send_json(event)
 
@@ -64,7 +65,6 @@ async def agent_websocket(websocket: WebSocket, incident_id: int):
                 pr_url = event.get("pr_url") or pr_url
                 report = event.get("report")
 
-        # Persist results
         async with AsyncSessionLocal() as db:
             result = await db.execute(select(Incident).where(Incident.id == incident_id))
             incident = result.scalar_one_or_none()
@@ -84,7 +84,10 @@ async def agent_websocket(websocket: WebSocket, incident_id: int):
     except WebSocketDisconnect:
         pass
     except Exception as e:
-        await websocket.send_json({"type": "error", "message": str(e)})
+        try:
+            await websocket.send_json({"type": "error", "message": str(e)})
+        except Exception:
+            pass
     finally:
         try:
             await websocket.close()
