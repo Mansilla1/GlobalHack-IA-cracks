@@ -105,13 +105,17 @@ frontend:
 down:
 	@echo "-> Stopping services..."
 	@if [ -f $(PIDS_DIR)/backend.pid ]; then \
-		kill $$(cat $(PIDS_DIR)/backend.pid) 2>/dev/null && echo "   Backend stopped" || echo "   Backend was not running"; \
+		kill $$(cat $(PIDS_DIR)/backend.pid) 2>/dev/null; \
 		rm -f $(PIDS_DIR)/backend.pid; \
 	fi
+	@pkill -f "uvicorn app.main:app" 2>/dev/null || true
+	@echo "   Backend stopped"
 	@if [ -f $(PIDS_DIR)/frontend.pid ]; then \
-		kill $$(cat $(PIDS_DIR)/frontend.pid) 2>/dev/null && echo "   Frontend stopped" || echo "   Frontend was not running"; \
+		kill $$(cat $(PIDS_DIR)/frontend.pid) 2>/dev/null; \
 		rm -f $(PIDS_DIR)/frontend.pid; \
 	fi
+	@pkill -f "node.*vite" 2>/dev/null || true
+	@echo "   Frontend stopped"
 	@echo "All services stopped."
 
 # -- Dev tools ---------------------------------------------------------------
