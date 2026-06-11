@@ -1,4 +1,4 @@
-.PHONY: help up down backend frontend install setup ensure-env see logs logs-backend logs-frontend clean
+.PHONY: help up down status backend frontend install setup ensure-env see logs logs-backend logs-frontend clean
 
 .DEFAULT_GOAL := help
 
@@ -25,6 +25,7 @@ help:
 	@echo ""
 	@echo "  Dev tools"
 	@echo "  ─────────────────────────────────────────────"
+	@echo "  status           Show which services are running"
 	@echo "  see              Open backend docs + frontend in browser"
 	@echo "  logs             Tail logs from both services (Ctrl+C to exit)"
 	@echo "  logs-backend     Tail backend logs"
@@ -117,6 +118,24 @@ down:
 	@pkill -f "node.*vite" 2>/dev/null || true
 	@echo "   Frontend stopped"
 	@echo "All services stopped."
+
+status:
+	@echo ""
+	@PIDS=$$(lsof -ti tcp:8000 2>/dev/null); \
+	if [ -n "$$PIDS" ]; then \
+		echo "  Backend  (port 8000): RUNNING"; \
+		echo "$$PIDS" | xargs ps -p -o pid=,command= 2>/dev/null | sed 's/^/    /'; \
+	else \
+		echo "  Backend  (port 8000): stopped"; \
+	fi
+	@PIDS=$$(lsof -ti tcp:5173 2>/dev/null); \
+	if [ -n "$$PIDS" ]; then \
+		echo "  Frontend (port 5173): RUNNING"; \
+		echo "$$PIDS" | xargs ps -p -o pid=,command= 2>/dev/null | sed 's/^/    /'; \
+	else \
+		echo "  Frontend (port 5173): stopped"; \
+	fi
+	@echo ""
 
 # -- Dev tools ---------------------------------------------------------------
 see:

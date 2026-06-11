@@ -22,6 +22,8 @@ async def init_db():
         await conn.run_sync(Base.metadata.create_all)
         for stmt in [
             "ALTER TABLE policies ADD COLUMN target_path VARCHAR DEFAULT ''",
+            "ALTER TABLE policies ADD COLUMN anthropic_api_key TEXT DEFAULT ''",
+            "ALTER TABLE policies ADD COLUMN claude_model VARCHAR(100) DEFAULT 'claude-sonnet-4-6'",
             "ALTER TABLE incidents ADD COLUMN project_id INTEGER",
             "ALTER TABLE incidents ADD COLUMN project_name VARCHAR(255)",
         ]:

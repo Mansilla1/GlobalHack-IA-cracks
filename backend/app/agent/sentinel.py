@@ -34,8 +34,10 @@ async def run_agent_stream(
     github_token: str,
     github_repo: str,
     target_path: str = "",
+    api_key: str = "",
+    model: str = "claude-sonnet-4-6",
 ) -> AsyncGenerator[dict[str, Any], None]:
-    client = anthropic.AsyncAnthropic()
+    client = anthropic.AsyncAnthropic(api_key=api_key or None)
 
     target_hint = (
         f"\nFocus your code search starting from the path: `{target_path}`"
@@ -63,7 +65,7 @@ Analyze this incident, classify it, explore the repository to understand the con
 
     while True:
         async with client.messages.stream(
-            model="claude-sonnet-4-6",
+            model=model,
             max_tokens=4096,
             system=SYSTEM_PROMPT,
             tools=TOOLS,

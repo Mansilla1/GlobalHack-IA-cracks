@@ -2,8 +2,8 @@ import anthropic
 from app.models.incident import Incident
 
 
-async def generate_postmortem(incident: Incident) -> str:
-    client = anthropic.AsyncAnthropic()
+async def generate_postmortem(incident: Incident, api_key: str = "", model: str = "claude-sonnet-4-6") -> str:
+    client = anthropic.AsyncAnthropic(api_key=api_key or None)
 
     prompt = f"""Generate a concise post-mortem report for the following incident.
 
@@ -26,7 +26,7 @@ Write a professional post-mortem in markdown with these sections:
 Be concise and technical."""
 
     message = await client.messages.create(
-        model="claude-haiku-4-5-20251001",
+        model=model,
         max_tokens=1024,
         messages=[{"role": "user", "content": prompt}],
     )

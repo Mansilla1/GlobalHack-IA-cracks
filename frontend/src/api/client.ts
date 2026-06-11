@@ -41,6 +41,13 @@ export interface Policy {
   require_human_approval: boolean
   max_files_per_pr: number
   allowed_file_extensions: string
+  anthropic_api_key: string
+  anthropic_api_key_set: boolean
+  claude_model: string
+  github_token: string
+  github_repo: string
+  github_token_set: boolean
+  target_path: string
 }
 
 export interface GitHubValidation {
@@ -72,6 +79,8 @@ export const projectsApi = {
 export const policyApi = {
   get: () => api.get<Policy>('/policy/').then(r => r.data),
   update: (data: Partial<Policy>) => api.put<Policy>('/policy/', data).then(r => r.data),
+  models: () => api.get<{ models: string[] }>('/policy/models').then(r => r.data.models),
+  validateGitHub: () => api.post<GitHubValidation>('/policy/validate-github').then(r => r.data),
 }
 
 export const webhookApi = {

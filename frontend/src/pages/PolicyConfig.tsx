@@ -2,6 +2,12 @@ import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { policyApi, type Policy, type GitHubValidation } from '../api/client'
 
+const MODEL_LABELS: Record<string, { label: string; desc: string }> = {
+  'claude-sonnet-4-6':        { label: 'Sonnet 4.6',  desc: 'Fast · recommended for most incidents' },
+  'claude-opus-4-8':          { label: 'Opus 4.8',    desc: 'Most capable · best for complex analysis' },
+  'claude-haiku-4-5-20251001':{ label: 'Haiku 4.5',   desc: 'Fastest · best for simple quick-fixes' },
+}
+
 export default function PolicyConfig() {
   const queryClient = useQueryClient()
   const { data: policy } = useQuery({ queryKey: ['policy'], queryFn: policyApi.get })
@@ -48,6 +54,78 @@ export default function PolicyConfig() {
 
   return (
     <div className="max-w-2xl space-y-6">
+      {/* AI Configuration */}
+      <div className="rounded-xl shadow-sm p-6" style={{ backgroundColor: '#FFFFFF' }}>
+        <h2 className="text-lg mb-1" style={{ fontFamily: "'Bitter', serif", fontWeight: 700, color: '#003D4F' }}>
+          AI Configuration
+        </h2>
+        <p className="text-sm mb-5" style={{ color: '#003D4F88' }}>
+          Anthropic credentials and model used by the agent to analyze and fix incidents.
+        </p>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-semibold mb-1" style={{ color: '#003D4F' }}>
+              Anthropic API Key
+              {policy?.anthropic_api_key_set && (
+                <span className="ml-2 text-xs font-semibold" style={{ color: '#6B9E78' }}>✓ saved</span>
+              )}
+            </label>
+            <input
+              type="password"
+              placeholder={policy?.anthropic_api_key_set ? '••••••••••••••••' : 'sk-ant-...'}
+              value={form.anthropic_api_key ?? ''}
+              onChange={e => setForm(f => ({ ...f, anthropic_api_key: e.target.value }))}
+              className={inputClass}
+              style={inputStyle}
+              onFocus={e => (e.currentTarget.style.boxShadow = '0 0 0 2px #47A1AD55')}
+              onBlur={e => (e.currentTarget.style.boxShadow = 'none')}
+            />
+            <p className="text-xs mt-1" style={{ color: '#003D4F55' }}>
+              Falls back to the <code>ANTHROPIC_API_KEY</code> env var if left empty.
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold mb-2" style={{ color: '#003D4F' }}>Model</label>
+            <div className="space-y-2">
+              {Object.entries(MODEL_LABELS).map(([id, { label, desc }]) => (
+                <button
+                  key={id}
+                  onClick={() => setForm(f => ({ ...f, claude_model: id }))}
+                  className="w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all"
+                  style={{
+                    border: `2px solid ${form.claude_model === id ? '#47A1AD' : '#EDF1F3'}`,
+                    backgroundColor: form.claude_model === id ? '#47A1AD11' : '#FAFAFA',
+                  }}
+                >
+                  <span
+                    className="w-4 h-4 rounded-full border-2 shrink-0"
+                    style={{
+                      borderColor: form.claude_model === id ? '#47A1AD' : '#003D4F44',
+                      backgroundColor: form.claude_model === id ? '#47A1AD' : 'transparent',
+                    }}
+                  />
+                  <div>
+                    <p className="text-sm font-semibold" style={{ color: '#003D4F' }}>{label}</p>
+                    <p className="text-xs" style={{ color: '#003D4F77' }}>{desc}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <button
+          onClick={() => mutation.mutate(form)}
+          disabled={mutation.isPending}
+          className="mt-5 w-full py-2.5 rounded-lg font-semibold text-sm text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+          style={{ backgroundColor: saved ? '#6B9E78' : '#F2617A' }}
+        >
+          {saved ? '✓ Saved' : mutation.isPending ? 'Saving...' : 'Save AI Configuration'}
+        </button>
+      </div>
+
       {/* GitHub Connection */}
       <div className="rounded-xl shadow-sm p-6" style={{ backgroundColor: '#FFFFFF' }}>
         <h2 className="text-lg mb-1" style={{ fontFamily: "'Bitter', serif", fontWeight: 700, color: '#003D4F' }}>

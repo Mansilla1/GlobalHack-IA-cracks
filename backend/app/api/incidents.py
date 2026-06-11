@@ -80,7 +80,12 @@ async def create_postmortem(incident_id: int, db: AsyncSession = Depends(get_db)
     if not incident:
         raise HTTPException(status_code=404, detail="Incident not found")
 
-    postmortem_text = await generate_postmortem(incident)
+    policy_result = await db.execute(select(Policy))
+    policy = policy_result.scalar_one_or_none()
+    api_key = policy.anthropic_api_key if policy else ""
+    model = (policy.claude_model or "claude-sonnet-4-6") if policy else "claude-sonnet-4-6"
+
+    postmortem_text = await generate_postmortem(incident, api_key=api_key, model=model)
     incident.postmortem = postmortem_text
     incident.status = IncidentStatus.resolved
     await db.commit()

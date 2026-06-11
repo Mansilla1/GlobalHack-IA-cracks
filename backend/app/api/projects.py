@@ -40,6 +40,15 @@ class ProjectResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+def _normalize_repo(repo: str) -> str:
+    """Accept full GitHub URLs and strip them down to owner/repo."""
+    repo = repo.strip().rstrip("/")
+    for prefix in ("https://github.com/", "http://github.com/", "github.com/"):
+        if repo.startswith(prefix):
+            repo = repo[len(prefix):]
+    return repo
+
+
 def _to_response(p: Project) -> ProjectResponse:
     return ProjectResponse(
         id=p.id,
@@ -62,7 +71,9 @@ async def list_projects(db: AsyncSession = Depends(get_db)):
 
 @router.post("/", response_model=ProjectResponse, status_code=201)
 async def create_project(payload: ProjectCreate, db: AsyncSession = Depends(get_db)):
-    project = Project(**payload.model_dump())
+    data = payload.model_dump()
+    data["github_repo"] = _normalize_repo(data.get("github_repo", ""))
+    project = Project(**data)
     db.add(project)
     await db.commit()
     await db.refresh(project)
@@ -78,6 +89,8 @@ async def update_project(project_id: int, payload: ProjectUpdate, db: AsyncSessi
     for field, value in payload.model_dump(exclude_none=True).items():
         if field == "github_token" and not value:
             continue
+        if field == "github_repo":
+            value = _normalize_repo(value)
         setattr(project, field, value)
     await db.commit()
     await db.refresh(project)

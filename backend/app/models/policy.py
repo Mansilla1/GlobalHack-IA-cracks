@@ -16,3 +16,5 @@ class Policy(Base):
     require_human_approval: Mapped[bool] = mapped_column(Boolean, default=True)
     max_files_per_pr: Mapped[int] = mapped_column(default=5)
     allowed_file_extensions: Mapped[str] = mapped_column(Text, default=".py,.js,.ts,.json")
+    anthropic_api_key: Mapped[str] = mapped_column(Text, default="")
+    claude_model: Mapped[str] = mapped_column(String(100), default="claude-sonnet-4-6")

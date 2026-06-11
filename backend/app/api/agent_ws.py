@@ -38,6 +38,9 @@ async def agent_websocket(websocket: WebSocket, incident_id: int):
         incident.status = IncidentStatus.analyzing
         await db.commit()
 
+    anthropic_api_key = policy.anthropic_api_key if policy else ""
+    claude_model = (policy.claude_model or "claude-sonnet-4-6") if policy else "claude-sonnet-4-6"
+
     if project:
         github_token = project.github_token
         github_repo = project.github_repo
@@ -65,6 +68,8 @@ async def agent_websocket(websocket: WebSocket, incident_id: int):
             github_token=github_token,
             github_repo=github_repo,
             target_path=target_path,
+            api_key=anthropic_api_key,
+            model=claude_model,
         ):
             await websocket.send_json(event)
 

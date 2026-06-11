@@ -9,6 +9,13 @@ from app.models.policy import Policy
 router = APIRouter(prefix="/policy", tags=["policy"])
 
 
+AVAILABLE_MODELS = [
+    "claude-sonnet-4-6",
+    "claude-opus-4-8",
+    "claude-haiku-4-5-20251001",
+]
+
+
 class PolicyUpdate(BaseModel):
     github_token: str = ""
     github_repo: str = ""
@@ -19,11 +26,14 @@ class PolicyUpdate(BaseModel):
     require_human_approval: bool = True
     max_files_per_pr: int = 5
     allowed_file_extensions: str = ".py,.js,.ts,.json"
+    anthropic_api_key: str = ""
+    claude_model: str = "claude-sonnet-4-6"
 
 
 class PolicyResponse(PolicyUpdate):
     id: int
     github_token_set: bool = False
+    anthropic_api_key_set: bool = False
 
     model_config = {"from_attributes": True}
 
@@ -43,6 +53,8 @@ def _to_response(policy: Policy) -> PolicyResponse:
     resp = PolicyResponse.model_validate(policy)
     resp.github_token_set = bool(policy.github_token)
     resp.github_token = ""
+    resp.anthropic_api_key_set = bool(policy.anthropic_api_key)
+    resp.anthropic_api_key = ""
     return resp
 
 
@@ -55,12 +67,17 @@ async def get_policy(db: AsyncSession = Depends(get_db)):
 async def update_policy(payload: PolicyUpdate, db: AsyncSession = Depends(get_db)):
     policy = await _get_or_create_policy(db)
     for field, value in payload.model_dump().items():
-        if field == "github_token" and not value:
+        if field in ("github_token", "anthropic_api_key") and not value:
             continue
         setattr(policy, field, value)
     await db.commit()
     await db.refresh(policy)
     return _to_response(policy)
+
+
+@router.get("/models")
+async def list_models():
+    return {"models": AVAILABLE_MODELS}
 
 
 @router.post("/validate-github")
