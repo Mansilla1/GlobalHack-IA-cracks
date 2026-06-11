@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy import select
@@ -29,14 +31,12 @@ class IncidentResponse(BaseModel):
     github_pr_url: str | None
     postmortem: str | None
     agent_analysis: str | None
-    created_at: str
-    updated_at: str
+    project_id: int | None
+    project_name: str | None
+    created_at: datetime
+    updated_at: datetime
 
     model_config = {"from_attributes": True}
-
-    def model_post_init(self, __context):
-        self.created_at = str(self.created_at)
-        self.updated_at = str(self.updated_at)
 
 
 @router.get("/", response_model=list[IncidentResponse])

@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import incidents, policy, webhook, agent_ws
+from app.api import incidents, policy, projects, webhook, agent_ws
 from app.models.database import init_db
 
 
@@ -30,6 +30,7 @@ app.add_middleware(
 
 app.include_router(incidents.router, prefix="/api")
 app.include_router(policy.router, prefix="/api")
+app.include_router(projects.router, prefix="/api")
 app.include_router(webhook.router, prefix="/api")
 app.include_router(agent_ws.router)
 

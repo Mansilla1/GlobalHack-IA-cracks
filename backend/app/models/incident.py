@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from sqlalchemy import String, DateTime, Text, func
+from sqlalchemy import Integer, String, DateTime, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 from app.models.database import Base
 
@@ -35,5 +35,7 @@ class Incident(Base):
     github_pr_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     postmortem: Mapped[str | None] = mapped_column(Text, nullable=True)
     agent_analysis: Mapped[str | None] = mapped_column(Text, nullable=True)
+    project_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    project_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())

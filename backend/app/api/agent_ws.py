@@ -7,6 +7,7 @@ from app.agent.sentinel import run_agent_stream
 from app.models.database import AsyncSessionLocal
 from app.models.incident import Incident, IncidentStatus
 from app.models.policy import Policy
+from app.models.project import Project
 
 router = APIRouter(tags=["agent"])
 
@@ -19,21 +20,34 @@ async def agent_websocket(websocket: WebSocket, incident_id: int):
         result = await db.execute(select(Incident).where(Incident.id == incident_id))
         incident = result.scalar_one_or_none()
 
-        policy_result = await db.execute(select(Policy))
-        policy = policy_result.scalar_one_or_none()
-
         if not incident:
             await websocket.send_json({"type": "error", "message": "Incident not found"})
             await websocket.close()
             return
 
+        # Load project settings if incident has a project_id
+        project = None
+        if incident.project_id:
+            proj_result = await db.execute(select(Project).where(Project.id == incident.project_id))
+            project = proj_result.scalar_one_or_none()
+
+        # Fall back to global policy for backward compat
+        policy_result = await db.execute(select(Policy))
+        policy = policy_result.scalar_one_or_none()
+
         incident.status = IncidentStatus.analyzing
         await db.commit()
 
-    github_token = policy.github_token if policy else ""
-    github_repo = policy.github_repo if policy else ""
-    target_path = policy.target_path if policy else ""
-    can_open_pr = policy.can_open_pr if policy else False
+    if project:
+        github_token = project.github_token
+        github_repo = project.github_repo
+        target_path = project.target_path
+        can_open_pr = project.can_open_pr
+    else:
+        github_token = policy.github_token if policy else ""
+        github_repo = policy.github_repo if policy else ""
+        target_path = policy.target_path if policy else ""
+        can_open_pr = policy.can_open_pr if policy else False
 
     if not can_open_pr:
         github_token = ""

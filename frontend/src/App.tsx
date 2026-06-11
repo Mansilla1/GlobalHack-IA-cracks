@@ -1,15 +1,17 @@
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Dashboard from './pages/Dashboard'
-import PolicyConfig from './pages/PolicyConfig'
+import Projects from './pages/Projects'
 import Postmortems from './pages/Postmortems'
+import Settings from './pages/Settings'
 
 const queryClient = new QueryClient()
 
 const NAV_LINKS = [
-  { to: '/',            label: 'Dashboard' },
-  { to: '/postmortems', label: 'Post-mortems' },
-  { to: '/governance',  label: 'Governance' },
+  { to: '/',            label: 'Dashboard',    end: true },
+  { to: '/projects',    label: 'Projects',     end: false },
+  { to: '/postmortems', label: 'Post-mortems', end: false },
+  { to: '/settings',    label: 'Settings',     end: false },
 ]
 
 function Layout({ children }: { children: React.ReactNode }) {
@@ -37,11 +39,11 @@ function Layout({ children }: { children: React.ReactNode }) {
         </div>
 
         <div className="flex gap-6 ml-4">
-          {NAV_LINKS.map(({ to, label }) => (
+          {NAV_LINKS.map(({ to, label, end }) => (
             <NavLink
               key={to}
               to={to}
-              end={to === '/'}
+              end={end}
               className="text-sm font-semibold transition-colors pb-0.5"
               style={({ isActive }) => ({
                 color: isActive ? '#FFFFFF' : 'rgba(255,255,255,0.55)',
@@ -66,8 +68,9 @@ export default function App() {
         <Layout>
           <Routes>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/projects" element={<Projects />} />
             <Route path="/postmortems" element={<Postmortems />} />
-            <Route path="/governance" element={<PolicyConfig />} />
+            <Route path="/settings" element={<Settings />} />
           </Routes>
         </Layout>
       </BrowserRouter>

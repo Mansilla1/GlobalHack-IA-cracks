@@ -17,11 +17,13 @@ async def get_db():
 
 
 async def init_db():
+    from app.models import project as _  # noqa: ensure Project is registered before create_all
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-        # Safe migrations for columns added after initial creation
         for stmt in [
             "ALTER TABLE policies ADD COLUMN target_path VARCHAR DEFAULT ''",
+            "ALTER TABLE incidents ADD COLUMN project_id INTEGER",
+            "ALTER TABLE incidents ADD COLUMN project_name VARCHAR(255)",
         ]:
             try:
                 await conn.execute(text(stmt))
