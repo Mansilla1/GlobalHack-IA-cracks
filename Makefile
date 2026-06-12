@@ -1,4 +1,4 @@
-.PHONY: help up down status backend frontend install setup ensure-env see logs logs-backend logs-frontend clean
+.PHONY: help up down status backend frontend install setup ensure-env see logs logs-backend logs-frontend clean drop-db
 
 .DEFAULT_GOAL := help
 
@@ -31,6 +31,7 @@ help:
 	@echo "  logs-backend     Tail backend logs"
 	@echo "  logs-frontend    Tail frontend logs"
 	@echo "  clean            Remove PIDs, logs and database"
+	@echo "  drop-db          Delete the database and restart fresh (keeps services running)"
 	@echo ""
 
 # -- Env files ---------------------------------------------------------------
@@ -157,3 +158,9 @@ clean:
 	@rm -rf $(PIDS_DIR) $(LOGS_DIR)
 	@rm -f $(BACKEND_DIR)/sentinel.db
 	@echo "Clean complete."
+
+drop-db:
+	@$(MAKE) -s down 2>/dev/null || true
+	@rm -f $(BACKEND_DIR)/sentinel.db
+	@echo "-> Database dropped."
+	@$(MAKE) -s up

@@ -44,6 +44,7 @@ export interface Policy {
   anthropic_api_key: string
   anthropic_api_key_set: boolean
   claude_model: string
+  agent_enabled: boolean
   github_token: string
   github_repo: string
   github_token_set: boolean
@@ -86,4 +87,8 @@ export const policyApi = {
 export const webhookApi = {
   simulate: (data: { title: string; error_message: string; stack_trace?: string; project_id?: number }) =>
     api.post('/webhook/simulate', data).then(r => r.data),
+}
+
+export function openScanSocket(projectId: number): WebSocket {
+  return new WebSocket(`ws://localhost:8000/ws/scan/${projectId}`)
 }

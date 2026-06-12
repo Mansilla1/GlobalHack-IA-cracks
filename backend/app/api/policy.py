@@ -28,6 +28,7 @@ class PolicyUpdate(BaseModel):
     allowed_file_extensions: str = ".py,.js,.ts,.json"
     anthropic_api_key: str = ""
     claude_model: str = "claude-sonnet-4-6"
+    agent_enabled: bool = True
 
 
 class PolicyResponse(PolicyUpdate):

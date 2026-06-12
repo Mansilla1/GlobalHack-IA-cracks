@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import incidents, policy, projects, webhook, agent_ws
+from app.api import incidents, policy, projects, webhook, agent_ws, scan_ws
 from app.models.database import init_db
 
 
@@ -33,6 +33,7 @@ app.include_router(policy.router, prefix="/api")
 app.include_router(projects.router, prefix="/api")
 app.include_router(webhook.router, prefix="/api")
 app.include_router(agent_ws.router)
+app.include_router(scan_ws.router)
 
 
 @app.get("/api/health")

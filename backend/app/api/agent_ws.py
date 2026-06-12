@@ -35,6 +35,11 @@ async def agent_websocket(websocket: WebSocket, incident_id: int):
         policy_result = await db.execute(select(Policy))
         policy = policy_result.scalar_one_or_none()
 
+        if policy and not policy.agent_enabled:
+            await websocket.send_json({"type": "error", "message": "Agent is disabled. Enable it in Settings."})
+            await websocket.close()
+            return
+
         incident.status = IncidentStatus.analyzing
         await db.commit()
 

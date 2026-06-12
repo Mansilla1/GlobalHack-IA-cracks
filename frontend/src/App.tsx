@@ -4,6 +4,8 @@ import Dashboard from './pages/Dashboard'
 import Projects from './pages/Projects'
 import Postmortems from './pages/Postmortems'
 import Settings from './pages/Settings'
+import NotificationCenter from './components/NotificationCenter'
+import AgentToggle from './components/AgentToggle'
 
 const queryClient = new QueryClient()
 
@@ -53,6 +55,11 @@ function Layout({ children }: { children: React.ReactNode }) {
               {label}
             </NavLink>
           ))}
+        </div>
+
+        <div className="ml-auto flex items-center gap-4">
+          <AgentToggle />
+          <NotificationCenter />
         </div>
       </nav>
 
