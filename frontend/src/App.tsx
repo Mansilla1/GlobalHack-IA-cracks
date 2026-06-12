@@ -4,16 +4,22 @@ import Dashboard from './pages/Dashboard'
 import Projects from './pages/Projects'
 import Postmortems from './pages/Postmortems'
 import Settings from './pages/Settings'
+import BusinessContext from './pages/BusinessContext'
+import Metrics from './pages/Metrics'
+import Integrations from './pages/Integrations'
 import NotificationCenter from './components/NotificationCenter'
 import AgentToggle from './components/AgentToggle'
 
 const queryClient = new QueryClient()
 
 const NAV_LINKS = [
-  { to: '/',            label: 'Dashboard',    end: true },
-  { to: '/projects',    label: 'Projects',     end: false },
-  { to: '/postmortems', label: 'Post-mortems', end: false },
-  { to: '/settings',    label: 'Settings',     end: false },
+  { to: '/',              label: 'Dashboard',     end: true },
+  { to: '/projects',      label: 'Projects',      end: false },
+  { to: '/postmortems',   label: 'Post-mortems',  end: false },
+  { to: '/business',      label: 'Business',      end: false },
+  { to: '/metrics',       label: 'Metrics',       end: false },
+  { to: '/integrations',  label: 'Integrations',  end: false },
+  { to: '/settings',      label: 'Settings',      end: false },
 ]
 
 function Layout({ children }: { children: React.ReactNode }) {
@@ -77,6 +83,9 @@ export default function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/postmortems" element={<Postmortems />} />
+            <Route path="/business" element={<BusinessContext />} />
+            <Route path="/metrics" element={<Metrics />} />
+            <Route path="/integrations" element={<Integrations />} />
             <Route path="/settings" element={<Settings />} />
           </Routes>
         </Layout>

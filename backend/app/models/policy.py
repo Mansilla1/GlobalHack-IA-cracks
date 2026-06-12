@@ -19,3 +19,7 @@ class Policy(Base):
     anthropic_api_key: Mapped[str] = mapped_column(Text, default="")
     claude_model: Mapped[str] = mapped_column(String(100), default="claude-sonnet-4-6")
     agent_enabled: Mapped[bool] = mapped_column(Boolean, default=True)
+    business_name: Mapped[str] = mapped_column(String(255), default="")
+    business_domain: Mapped[str] = mapped_column(String(100), default="")
+    business_description: Mapped[str] = mapped_column(Text, default="")
+    critical_services: Mapped[str] = mapped_column(Text, default="")

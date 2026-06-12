@@ -24,6 +24,7 @@ class ProjectUpdate(BaseModel):
     target_path: str | None = None
     can_open_pr: bool | None = None
     active: bool | None = None
+    business_linked: bool | None = None
 
 
 class ProjectResponse(BaseModel):
@@ -35,6 +36,7 @@ class ProjectResponse(BaseModel):
     target_path: str
     can_open_pr: bool
     active: bool
+    business_linked: bool
     created_at: str
 
     model_config = {"from_attributes": True}
@@ -59,6 +61,7 @@ def _to_response(p: Project) -> ProjectResponse:
         target_path=p.target_path,
         can_open_pr=p.can_open_pr,
         active=p.active,
+        business_linked=p.business_linked,
         created_at=str(p.created_at),
     )
 

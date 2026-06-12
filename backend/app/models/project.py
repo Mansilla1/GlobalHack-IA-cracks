@@ -14,4 +14,5 @@ class Project(Base):
     target_path: Mapped[str] = mapped_column(String(500), default="")
     can_open_pr: Mapped[bool] = mapped_column(Boolean, default=True)
     active: Mapped[bool] = mapped_column(Boolean, default=True)
+    business_linked: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())

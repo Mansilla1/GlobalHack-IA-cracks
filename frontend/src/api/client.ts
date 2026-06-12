@@ -30,6 +30,7 @@ export interface Project {
   target_path: string
   can_open_pr: boolean
   active: boolean
+  business_linked: boolean
   created_at: string
 }
 
@@ -45,6 +46,10 @@ export interface Policy {
   anthropic_api_key_set: boolean
   claude_model: string
   agent_enabled: boolean
+  business_name: string
+  business_domain: string
+  business_description: string
+  critical_services: string
   github_token: string
   github_repo: string
   github_token_set: boolean

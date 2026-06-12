@@ -29,6 +29,10 @@ class PolicyUpdate(BaseModel):
     anthropic_api_key: str = ""
     claude_model: str = "claude-sonnet-4-6"
     agent_enabled: bool = True
+    business_name: str = ""
+    business_domain: str = ""
+    business_description: str = ""
+    critical_services: str = ""
 
 
 class PolicyResponse(PolicyUpdate):

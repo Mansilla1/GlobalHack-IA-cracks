@@ -25,8 +25,13 @@ async def init_db():
             "ALTER TABLE policies ADD COLUMN anthropic_api_key TEXT DEFAULT ''",
             "ALTER TABLE policies ADD COLUMN claude_model VARCHAR(100) DEFAULT 'claude-sonnet-4-6'",
             "ALTER TABLE policies ADD COLUMN agent_enabled BOOLEAN DEFAULT 1",
+            "ALTER TABLE policies ADD COLUMN business_name VARCHAR(255) DEFAULT ''",
+            "ALTER TABLE policies ADD COLUMN business_domain VARCHAR(100) DEFAULT ''",
+            "ALTER TABLE policies ADD COLUMN business_description TEXT DEFAULT ''",
+            "ALTER TABLE policies ADD COLUMN critical_services TEXT DEFAULT ''",
             "ALTER TABLE incidents ADD COLUMN project_id INTEGER",
             "ALTER TABLE incidents ADD COLUMN project_name VARCHAR(255)",
+            "ALTER TABLE projects ADD COLUMN business_linked BOOLEAN DEFAULT 0",
         ]:
             try:
                 await conn.execute(text(stmt))
